@@ -101,7 +101,7 @@ class LoginPresenter(loginActivity: LoginActivity) : ILoginPresenter, ILoginMode
         this.email = email
         PrefManager.putString(Constant.EMAIL, this.email)
         loginView?.showProgress(true)
-        loginModel.login(email.trim({ it <= ' ' }).toLowerCase(), password, this)
+        loginModel.login(email.trim { it <= ' ' }.toLowerCase(), password, this)
     }
 
     override fun cancelLogin() {
@@ -144,6 +144,10 @@ class LoginPresenter(loginActivity: LoginActivity) : ILoginPresenter, ILoginMode
             loginView?.showProgress(false)
             loginView?.onLoginError(utilModel.getString(R.string.email_not_registered_title),
                     utilModel.getString(R.string.email_not_registered))
+        } else if (response.code() == 403) {
+            loginView?.showProgress(false)
+            loginView?.onLoginError(utilModel.getString(R.string.unactivate_user),
+                    utilModel.getString(R.string.error_unactivated_user_message))
         } else {
             loginView?.showProgress(false)
             loginView?.onLoginError("${response.code()} " + utilModel.getString(R.string.error),
